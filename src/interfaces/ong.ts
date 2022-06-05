@@ -1,7 +1,7 @@
 export interface IOng {
-    ong_foto_perfil: string;
-    ong_name: string;
-    ong_description: string;
+    fotoDePerfil: string,
+    name: string;
+    descricao: string;
     cep: string;
     bairro: string;
     rua: string;

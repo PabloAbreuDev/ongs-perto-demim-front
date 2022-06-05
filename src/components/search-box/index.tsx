@@ -1,42 +1,125 @@
-import Input from "../input"
-import { SearchBoxStyled } from "./styled"
+import { useContext, useEffect, useState } from "react";
+import { OngContext } from "../../context/ongs";
+import { IOng } from "../../interfaces/ong";
+import api from "../../services/api";
+import Input from "../input";
+import { SearchBoxStyled } from "./styled";
+
+type Estado = {
+    sigla: string;
+    id: number;
+};
+
+type Cidade = {
+    nome: string;
+    id: number;
+};
 
 const SearchBox = () => {
-    return <SearchBoxStyled>
-        <div className="box">
-            <div className="ong-description">
-                <div className="item">
-                    <Input name={""} placeholder="Nome" />
-                </div>
-                <div className="item">
-                    <Input name={""} placeholder="Tipo" />
-                </div>
-            </div>
-            <div className="ong-location">
-                <div className="left">
-                    <div className="item estado">
-                        <select>
-                            <option value="">Opcao 1</option>
-                            <option value="">Opcao 2</option>
-                            <option value="">Opcao 3</option>
-                        </select>
-                    </div>
-                    <div className="item cidade">
-                        <select>
-                            <option value="">Opcao 1</option>
-                            <option value="">Opcao 2</option>
-                            <option value="">Opcao 3</option>
-                            <option value="">Hashura</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="item buscar">
-                    <button>Buscar</button>
-                </div>
-            </div>
-        </div>
+    const { ongs, loadOngs } = useContext(OngContext);
 
-    </SearchBoxStyled>
-}
+    const [nome, setNome] = useState<string>("");
+    const [tipo, setTipo] = useState<string>("");
 
-export default SearchBox
+    const [estado, setEstado] = useState<string>();
+    const [cidade, setCidade] = useState<string>();
+
+    const [estados, setEstados] = useState<Estado[]>();
+    const [cidades, setCidades] = useState<Cidade[]>();
+
+    const getOngs = async () => {
+        console.log({ estado, cidade, tipo, nome })
+        try {
+            const { data } = await api.get<IOng[]>(
+                `ongs?estado=${estado}&name=${nome}&tipo=${tipo}&cidade=${cidade}`
+            );
+            loadOngs(data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const getEstados = async () => {
+        try {
+            const { data } = await api.get<Estado[]>(
+                "https://servicodados.ibge.gov.br/api/v1/localidades/estados/"
+            );
+            data.unshift({ id: 99, sigla: "TODOS OS ESTADOS" });
+            setCidades([{ nome: "TODAS AS CIDADES", id: 99 }])
+            setEstados(data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    // seta as cidades disponiveis
+    const setCidadesFn = async (result: any) => {
+
+        try {
+            const { data } = await api.get<Cidade[]>(
+                `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${result}/municipios`
+            );
+            setCidades(data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        getOngs();
+        getEstados();
+    }, []);
+
+    return (
+        <SearchBoxStyled>
+            <div className="box">
+                <div className="ong-description">
+
+                    <div className="item">
+
+                        <Input
+                            value={nome}
+                            name={"nome"}
+                            placeholder="Nome"
+                            onChange={(e) => setNome(e.target.value)}
+                        />
+                    </div>
+                    <div className="item">
+                        <Input
+                            value={tipo}
+                            name={"tipo"}
+                            placeholder="Tipo"
+                            onChange={(e) => setTipo(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="ong-location">
+                    <div className="left">
+                        <div className="item estado">
+                            <select onChange={(e) => [setCidadesFn(e.target.value), setEstado(e.target.value)]}>
+                                {estados?.map((item: Estado) => (
+                                    <option value={item.sigla}>{item.sigla}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="item cidade">
+                            <select onChange={(val) => setCidade(val.target.value)}>
+                                {cidades?.map((item: Cidade) => (
+                                    <option value={item.nome}>{item.nome}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="item buscar">
+                        <button onClick={() => getOngs()}>Buscar</button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </SearchBoxStyled>
+    );
+};
+
+export default SearchBox;
