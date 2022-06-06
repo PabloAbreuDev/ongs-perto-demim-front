@@ -1,20 +1,30 @@
-import Layout from "./components/layout";
-import OngsProvider from "./context/ongs";
 import Home from "./pages/home";
+import SignIn from "./pages/signin";
 
-import Global from "./styles/global";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/layout";
 
-
-const App: React.FC = () => {
+export const App: React.FC = () => {
   return (
-    <OngsProvider>
-      <div>
-        <Global />
-        <Layout>
-          <Home />
-        </Layout>
-      </div>
-    </OngsProvider>
-  )
-}
-export default App;
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <Home />
+            </Layout>
+          }
+        />
+        <Route
+          path="/signin"
+          element={
+            <Layout>
+              <SignIn />
+            </Layout>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+};

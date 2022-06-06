@@ -21,8 +21,8 @@ const SearchBox = () => {
     const [nome, setNome] = useState<string>("");
     const [tipo, setTipo] = useState<string>("");
 
-    const [estado, setEstado] = useState<string>();
-    const [cidade, setCidade] = useState<string>();
+    const [estado, setEstado] = useState<string>("");
+    const [cidade, setCidade] = useState<string>("");
 
     const [estados, setEstados] = useState<Estado[]>();
     const [cidades, setCidades] = useState<Cidade[]>();
@@ -31,7 +31,7 @@ const SearchBox = () => {
         console.log({ estado, cidade, tipo, nome })
         try {
             const { data } = await api.get<IOng[]>(
-                `ongs?estado=${estado}&name=${nome}&tipo=${tipo}&cidade=${cidade}`
+                `ongs?estado=${estado === "TODOS OS ESTADOS" ? "" : estado}&name=${nome}&tipo=${tipo}&cidade=${cidade === 'TODAS AS CIDADES' ? "" : cidade}`
             );
             loadOngs(data);
         } catch (err) {
@@ -59,6 +59,7 @@ const SearchBox = () => {
             const { data } = await api.get<Cidade[]>(
                 `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${result}/municipios`
             );
+            data.unshift({ id: 99, nome: "TODOS AS CIDADES" });
             setCidades(data);
         } catch (err) {
             console.log(err);
