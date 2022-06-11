@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { IOng } from "../../interfaces/ong";
+import { IOng } from "../interfaces/ong";
 
 export type OngsContextState = {
     ongs: IOng[];

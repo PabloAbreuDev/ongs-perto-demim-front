@@ -1,9 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import OngsProvider from "./context/ongs";
+import OngsProvider from "./context/ong";
 import reportWebVitals from "./reportWebVitals";
 import Global from "./styles/global";
 import { App } from "./App";
+import { AuthProvider } from "./context/auth";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -11,9 +12,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Global />
-    <OngsProvider>
-      <App />
-    </OngsProvider>
+    <AuthProvider>
+      <OngsProvider>
+        <App />
+      </OngsProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 
