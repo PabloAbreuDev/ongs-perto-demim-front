@@ -23,16 +23,40 @@ const Navbar = () => {
             <li>Home</li>
           </Link>
           {
-            user._id === "" ? <Link to={"/login"}>
-              <li>Entrar</li>
-            </Link> : <button onClick={() => doLogout()}>Logout</button >
+            user._id === "" ?
+              (
+                <>
+                  <Link to={"/login"}>
+                    <li>Entrar</li>
+                  </Link>
+
+                  <li>Cadastrar</li>
+
+                </>
+
+
+
+              ) :
+
+              (
+                <>
+                  <button onClick={() => doLogout()}>Logout</button >
+                </>
+
+              )
+
           }
 
-          <li>Cadastrar</li>
-          <li>Criar Ong</li>
+
+
+
+
+          <Link to={"/ong/criar"}> <li>Criar Ong</li> </Link>
+
+
         </ul>
-      </div>
-    </NavbarStyled>
+      </div >
+    </NavbarStyled >
   );
 };
 
