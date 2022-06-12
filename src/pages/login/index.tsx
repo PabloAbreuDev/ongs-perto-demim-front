@@ -1,18 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "../../components/input";
 import useAuth from "../../hooks/use-auth";
 import { IUser } from "../../interfaces/user";
 import api from "../../services/api";
 import { SignInBox, SignInStyled } from "./styled";
 import jwt_decode from "jwt-decode";
+import { useLocation, useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
-const SignIn: React.FC = () => {
+
+
+const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const { setAuth } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.pathname || "/";
+
+
+  const { setAuth, user } = useAuth();
+
+  const MySwal = withReactContent(Swal)
+
+  // Verifica se está logado
+  useEffect(() => {
+    async function redirectLogin() {
+      if (user._id !== "") {
+        navigate('/', { replace: true });
+        return
+      }
+    }
+    redirectLogin()
+
+  }, [])
 
   const doLogin = async () => {
+
     try {
       // Logando
       const loginResponse = await api.put<{ token: string, refreshToken: string }>("/users/login", {
@@ -39,8 +64,9 @@ const SignIn: React.FC = () => {
       localStorage.setItem("@App:refresh", loginResponse.data.refreshToken)
       localStorage.setItem("@App:token", loginResponse.data.token)
       localStorage.setItem("@App:user", decoded.user_id)
+      navigate('/', { replace: true });
     } catch (err: any) {
-      console.log(err.response.data.message);
+      MySwal.fire({ title: err.response.data.message, icon: "error" })
     }
   };
 
@@ -78,5 +104,5 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default Login;
 

@@ -8,8 +8,8 @@ export type AuthState = {
 }
 
 const contextDefaultValues: AuthState = {
-  user: { email: "", name: "", _id: "" },
-  acessToken: "",
+  user: { email: "", name: "", _id: localStorage.getItem("@App:user") || "" },
+  acessToken: localStorage.getItem("@App:token") || "",
   setAuth: () => { }
 };
 
@@ -24,8 +24,6 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     setUser(user)
     setAcessToken(accessToken)
   }
-
-
 
   return (
     <AuthContext.Provider value={{ user, acessToken, setAuth }}>

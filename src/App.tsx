@@ -1,29 +1,37 @@
 import Home from "./pages/home";
-import SignIn from "./pages/signin";
+import Login from "./pages/login";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout";
+import ProtectedRoute from "./components/protected-route";
+
 
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
+
         <Route
           path="/"
           element={
             <Layout>
-              <Home />
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
             </Layout>
           }
         />
+
+
         <Route
-          path="/signin"
+          path="/login"
           element={
             <Layout>
-              <SignIn />
+              <Login />
             </Layout>
           }
         />
+
       </Routes>
     </BrowserRouter>
   );
